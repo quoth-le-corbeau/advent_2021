@@ -7,8 +7,16 @@ def calculate_final_position_depth_aim_product(file_path: str) -> int:
     horizontal = 0
     depth = 0
     aim = 0
-    for instruciton in instructions:
-        pass
+    for instruction in instructions:
+        if instruction[0] == "forward":
+            horizontal += instruction[1]
+            depth += aim * instruction[1]
+        elif instruction[0] == "down":
+            aim += instruction[1]
+        else:
+            assert instruction[0] == "up"
+            aim -= instruction[1]
+    return horizontal * depth
 
 
 def _parse_instructions(file: str) -> list[tuple[str, int]]:
