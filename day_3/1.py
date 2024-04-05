@@ -4,7 +4,7 @@ import pandas
 
 
 def calculate_power_consumption(file_path: str):
-    diagnostic = _parse_diagnostic(file=file_path)
+    diagnostic: pandas.DataFrame = _read_diagnostic(file=file_path)
     gamma_rate_bin = diagnostic.mode(axis=0).values[0]
     epsilon_rate_bin = [abs(1 - digit) for digit in gamma_rate_bin]
     gamma_rate = _binary_to_base_ten(binary_digits=gamma_rate_bin)
@@ -22,7 +22,7 @@ def _binary_to_base_ten(binary_digits: list[int]) -> int:
     return rate
 
 
-def _parse_diagnostic(file: str) -> pandas.DataFrame:
+def _read_diagnostic(file: str) -> pandas.DataFrame:
     with open(pathlib.Path(__file__).parent / file, "r") as puzzle_input:
         lines = puzzle_input.read().splitlines()
         grid = [list(map(int, line)) for line in lines]
