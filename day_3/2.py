@@ -3,24 +3,32 @@ import pathlib
 import pandas
 
 
-def calculate_power_consumption(file_path: str):
+def calculate_power_consumption(file_path: str) -> int:
     diagnostic = _read_diagnostic(file=file_path)
-    current_data_grid = diagnostic
+    oxygen_generator_rating = _get_generator_rating(data_grid=diagnostic)
+    co2_generator_rating = _get_generator_rating(data_grid=diagnostic, mode="co2")
+    return oxygen_generator_rating * co2_generator_rating
+
+
+def _get_generator_rating(data_grid: pandas.DataFrame, mode:str = "oxygen") -> int:
+    current_data_grid = data_grid
     column_name = 1
-    while len(current_data_grid) > 1 and column_name <= len(diagnostic.columns):
-        oxygen_mode = _get_column_mode(
+    while len(current_data_grid) > 1 and column_name <= len(data_grid.columns):
+        modal_value = _get_column_mode_or_default(
             column_name=column_name, data_grid=current_data_grid
         )
-        oxygen_subset = current_data_grid[current_data_grid[column_name] == oxygen_mode]
-        current_data_grid = oxygen_subset
+        
+        modal_value = str(1 - int(modal_value)) if mode == "co2" else modal_value
+        data_subset = current_data_grid[current_data_grid[column_name] == modal_value]
+        current_data_grid = data_subset
         column_name += 1
-    oxygen_generator_rating_string = "".join(
+    generator_rating_string = "".join(
         [value for value in current_data_grid.values[0]]
     )
-    oxygen_generator_rating = _binary_string_to_integer(
-        binary_string=oxygen_generator_rating_string
+    generator_rating = _binary_string_to_integer(
+        binary_string=generator_rating_string
     )
-    print(f"{oxygen_generator_rating=}")
+    return generator_rating
 
 
 def _binary_string_to_integer(binary_string: str) -> int:
@@ -31,7 +39,7 @@ def _binary_string_to_integer(binary_string: str) -> int:
     return total
 
 
-def _get_column_mode(column_name: int, data_grid: pandas.DataFrame) -> str:
+def _get_column_mode_or_default(column_name: int, data_grid: pandas.DataFrame) -> str:
     column_values = data_grid[column_name].values
     count_0 = 0
     count_1 = 0
@@ -58,6 +66,6 @@ def _read_diagnostic(file: str) -> pandas.DataFrame:
 start = time.perf_counter()
 print(calculate_power_consumption("eg.txt"))
 print(f"TEST -> Elapsed {time.perf_counter() - start:2.4f} seconds.")
-# start = time.perf_counter()
-# print(calculate_power_consumption("input.txt"))
-# print(f"REAL -> Elapsed {time.perf_counter() - start:2.4f} seconds.")
+start = time.perf_counter()
+print(calculate_power_consumption("input.txt"))
+print(f"REAL -> Elapsed {time.perf_counter() - start:2.4f} seconds.")
