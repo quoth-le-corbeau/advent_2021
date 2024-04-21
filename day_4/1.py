@@ -6,7 +6,7 @@ import pandas
 
 def calculate_bingo_score(file_path: str):
     to_be_drawn_numbers, bingo_boards = _parse_bingo_game(file=file_path)
-    winning_number, board_number, drawn_numbers = _get_winning_number(
+    winning_number, board_number, drawn_numbers = _get_winner_board_and_marked(
         numbers=to_be_drawn_numbers, boards=bingo_boards
     )
     unmarked_sum = _sum_unmarked_on_board(
@@ -27,7 +27,7 @@ def _sum_unmarked_on_board(marked_numbers: set[str], board: pandas.DataFrame) ->
     return total
 
 
-def _get_winning_number(
+def _get_winner_board_and_marked(
     numbers: list[str], boards: list[pandas.DataFrame]
 ) -> tuple[Optional[int], Optional[int], set[str]]:
     comparison_set = set(numbers[:4])
