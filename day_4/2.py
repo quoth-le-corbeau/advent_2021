@@ -31,7 +31,7 @@ def _get_winner_board_and_marked(
     numbers: list[str], boards: list[pandas.DataFrame]
 ) -> tuple[Optional[int], Optional[int], set[str]]:
     comparison_set = set(numbers[:4])
-    winners = list()
+    winners: list[int] = list()
     for drawn_number in numbers:
         comparison_set.add(drawn_number)
         for board_number, board in enumerate(boards):
